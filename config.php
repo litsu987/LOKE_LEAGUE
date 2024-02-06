@@ -1,0 +1,4 @@
+<?php
+$dbUser = "root";
+$dbPass = "";
+?>

@@ -1,0 +1,2 @@
+**************************************************
+2024-02-03 00:57:23 [REGISTER] Error al enviar el correo de validación: SMTP connect() failed. https://github.com/PHPMailer/PHPMailer/wiki/Troubleshooting

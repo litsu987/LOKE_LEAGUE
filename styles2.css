@@ -1,0 +1,587 @@
+:root {
+    --azul: #eeab46;
+    --azulOscuro: #769fd1;
+    --azulGris: #8DA9C4;
+    --blanco: #fff;
+    --fuente: 'Quicksand', sans-serif;
+    --hoverScale: 1.1;
+    /* Factor de escala al pasar el ratón */
+}
+
+html {
+    box-sizing: border-box;
+}
+
+*,
+*::after,
+*::before {
+    box-sizing: inherit;
+}
+
+body {
+    font-family: var(--fuente);
+    background-image: url('https://i.imgur.com/IoGRLz7.png');
+    /* Cambia la URL por la de tu imagen */
+    background-position: center center;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    height: 100vh;
+}
+
+.contenedor {
+    margin: 0 auto;
+    max-width: 1200px;
+    width: 95%;
+}
+
+.imagen-formulario {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url('../img/bg.jpg');
+    background-position: center center;
+    background-size: cover;
+    height: 200px;
+    flex: 0 0 calc(60%);
+    position: relative;
+    overflow: hidden;
+}
+
+.imagen-formulario::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to right, rgba(141, 169, 196, .5), rgba(19, 64, 116, .5));
+    z-index: 1;
+}
+
+.imagen-formulario img {
+    max-width: 100%;
+    position: relative;
+    z-index: 2;
+}
+
+@media (min-width: 768px) {
+    .imagen-formulario {
+        height: auto;
+        background-position: right;
+    }
+}
+
+@media (min-width: 1200px) {
+    .imagen-formulario {
+        background-position: center;
+    }
+}
+
+@media (min-width: 768px) {
+    .contenedor-formulario {
+        display: flex;
+    }
+}
+
+.formulario {
+    padding: 50px;
+    background-color: var(--azul);
+}
+
+.texto-formulario h2,
+.input label,
+.password-olvidada a,
+.texto-formulario p {
+    color: var(--blanco);
+}
+
+.texto-formulario h2 {
+    font-size: 40px;
+    text-align: center;
+}
+
+.texto-formulario p {
+    font-size: 22px;
+    text-align: center;
+}
+
+.input {
+    margin-bottom: 15px;
+}
+
+.input label {
+    display: block;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.input input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 5px;
+    outline: none;
+    font-size: 16px;
+    border: 1px solid var(--azulGris);
+    background-color: var(--blanco);
+    color: var(--azulOscuro);
+}
+
+.input input:focus {
+    border-color: var(--azul);
+}
+
+.input input[type="submit"] {
+    background-color: var(--azulGris);
+    color: var(--blanco);
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    padding: 12px 20px;
+    transition: background-color .3s ease-in-out;
+}
+
+.input input[type="submit"]:hover {
+    cursor: pointer;
+    background-color: var(--azulOscuro);
+}
+
+.texto-formulario .error-message {
+    color: red;
+    font-weight: bold;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+/* Dashboard */
+
+
+/* Estilos generales */
+.dashboardSection {
+    position: absolute;
+    top: 60px;
+    left: 20px;
+    padding: 20px;
+    border-radius: 10px;
+    width: calc(20% - 40px);
+}
+
+.dashboardContent {
+    display: flex;
+    flex-direction: column;
+    /* Cambia la dirección a columna */
+}
+
+.userInfoContainer,
+.amigosContainer {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    /* Agrega espacio entre los contenedores */
+    width: 70%;
+    /* Ajusta el ancho del contenedor */
+    max-width: 200px;
+    /* Ajusta el ancho máximo del contenedor */
+}
+
+.userInfoContainer img {
+    width: 100%;
+    height: auto;
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+.userName {
+    font-size: 24px;
+    text-align: center;
+}
+
+.logoutLink {
+    color: #ff0000;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    /* Ajusta el margen superior según sea necesario */
+}
+
+
+.logoutLink:hover {
+    color: #cc0000;
+}
+
+
+
+.statusToggle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 10px;
+    /* Ajusta el margen entre el nombre y el toggle */
+}
+
+.toggle {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+    background-color: #ccc;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.toggle::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background-color: #fff;
+    border-radius: 50%;
+    transition: transform 0.3s;
+}
+
+input[type="checkbox"] {
+    display: none;
+}
+
+input[type="checkbox"]:checked+.toggle {
+    background-color: #ff4d4d;
+    /* Cambia el color de fondo a rojo */
+}
+
+input[type="checkbox"]:checked+.toggle::before {
+    transform: translateX(20px);
+}
+
+.toggleFeedback {
+    margin-left: 5px;
+    /* Ajusta el margen izquierdo */
+    margin-right: 10px;
+    /* Ajusta el margen derecho */
+    font-size: 14px;
+    color: #888;
+}
+
+.accountLink {
+    color: #0000ff;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    /* Ajusta el margen superior según sea necesario */
+}
+
+.accountLink:hover {
+    color: #000099;
+    /* Cambia el color del hover */
+}
+
+.userName {
+    font-size: 24px;
+    text-align: center;
+    color: #333;
+    /* Cambia el color del texto */
+    margin-bottom: 10px;
+    /* Ajusta el margen inferior */
+}
+
+.userName::first-letter {
+    text-transform: uppercase;
+    /* Convierte la primera letra a mayúscula */
+}
+
+
+.popupContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Fondo semitransparente */
+    display: none;
+    /* Por defecto, el div emergente está oculto */
+    justify-content: center;
+    /* Centra horizontalmente */
+    align-items: center;
+    /* Centra verticalmente */
+}
+
+.popupContent {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.popupContainer.active {
+    display: flex;
+    /* Muestra el div emergente cuando está activo */
+}
+
+
+/* Estilos para el contenedor centrado */
+.centeredContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin: auto;
+    /* Centra horizontalmente */
+    width: 50%;
+    /* Puedes ajustar el ancho según sea necesario */
+}
+
+
+/* Estilos para el contenedor horizontal */
+/* Estilos para el contenedor horizontal */
+.horizontalContainer {
+    display: flex;
+    justify-content: space-around;
+    align-items: stretch;
+
+    padding: 20px;
+    border-radius: 10px;
+    gap: 6%;
+    /* Espacio entre los elementos */
+}
+
+/* Estilos para los elementos dentro del contenedor horizontal */
+/* Estilos para los elementos dentro del contenedor horizontal */
+.horizontalContainer>div {
+    background-color: #ffffff;
+    margin: 2vw;
+    /* Márgenes en unidades de viewport width */
+    padding: 2vw;
+    /* Relleno en unidades de viewport width */
+    border: 7px solid #ccc;
+    flex: 1;
+    width: 20vw;
+    /* Ancho en unidades de viewport width */
+    height: 70vh;
+    /* Altura en unidades de viewport height */
+    transition: transform 0.3s ease;
+    border-radius: 20px;
+    /* Ajusta el valor según desees */
+}
+
+
+.horizontalContainer>div:hover {
+    transform: scale(1.1);
+    /* Escala aumentada al pasar el ratón */
+}
+
+.elemento1 {
+    background-image: url('https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/c43df9e9-7cf9-486f-b650-624a47790895/dfa50it-c1b072b7-9b5c-4314-b89f-8a46958ee0d6.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2M0M2RmOWU5LTdjZjktNDg2Zi1iNjUwLTYyNGE0Nzc5MDg5NVwvZGZhNTBpdC1jMWIwNzJiNy05YjVjLTQzMTQtYjg5Zi04YTQ2OTU4ZWUwZDYuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.yfrJKU3MPGqrqp_hV4sE9TvEe8ff0BohB4SxqmzTqkQ');
+    /* Reemplaza 'ruta_de_la_imagen.jpg' con la URL o ruta de tu imagen */
+    background-size: cover;
+    background-position: center;
+    border-radius: 20px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    /* Otros estilos según tus necesidades */
+
+}
+
+.elemento2 {
+    background-image: url('https://i.redd.it/69e1d87us6ha1.gif');
+    background-size: cover;
+    /* Ajusta el tamaño de la imagen de fondo para que se ajuste completamente dentro del elemento */
+    background-position: left center;
+    border-radius: 20px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    /* Otros estilos según tus necesidades */
+}
+
+.elemento3 {
+    background-image: url('https://i.kym-cdn.com/photos/images/original/002/609/486/a41.gif');
+    background-size: cover;
+    background-position: 42% center;
+    /* Ajusta la posición un poco hacia la izquierda */
+    border-radius: 20px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    /* Otros estilos según tus necesidades */
+
+}
+
+.titulo {
+    font-family: 'TuFuenteFavorita', sans-serif;
+    font-size: 40px;
+    color: #eeab46;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 0.3s, color 0.3s;
+    z-index: 1;
+}
+
+.elemento1::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    /* Inicialmente invisible */
+    transition: opacity 0.3s;
+}
+
+.elemento1:hover::before {
+    opacity: 1;
+    /* Muestra la superposición al pasar el ratón */
+}
+
+.elemento1:hover .titulo {
+    transform: translate(-50%, -50%) scale(1.1);
+    color: #ffffff;
+}
+
+.titulo2 {
+    font-family: 'TuFuenteFavorita', sans-serif;
+    font-size: 40px;
+    color: #eeab46;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 0.3s, color 0.3s;
+    z-index: 1;
+}
+
+.elemento2::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    /* Inicialmente invisible */
+    transition: opacity 0.3s;
+}
+
+.elemento2:hover::before {
+    opacity: 1;
+    /* Muestra la superposición al pasar el ratón */
+}
+
+.elemento2:hover .titulo {
+    transform: translate(-50%, -50%) scale(1.1);
+    color: #ffffff;
+}
+
+
+
+.titulo3 {
+    font-family: 'TuFuenteFavorita', sans-serif;
+    font-size: 40px;
+    color: #eeab46;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 0.3s, color 0.3s;
+    z-index: 1;
+}
+
+.elemento3::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    /* Inicialmente invisible */
+    transition: opacity 0.3s;
+}
+
+.elemento3:hover::before {
+    opacity: 1;
+    /* Muestra la superposición al pasar el ratón */
+}
+
+.elemento3:hover .titulo {
+    transform: translate(-50%, -50%) scale(1.1);
+    color: #ffffff;
+}
+
+.elemento1,
+.elemento2,
+.elemento3 {
+    cursor: pointer;
+}
+
+.elemento1:hover::before,
+.elemento2:hover::before,
+.elemento3:hover::before {
+    opacity: 0.7;
+    /* Cambia la opacidad al pasar el ratón */
+}
+
+.elemento1:active,
+.elemento2:active,
+.elemento3:active {
+    transform: translateY(2px);
+    /* Efecto de clic */
+}
+
+#contenidoAdicional {
+    background-color: rgba(255, 255, 255, 0.9);
+    /* Fondo semitransparente */
+    width: 80%;
+    /* Ancho del div */
+    height: 80%;
+    /* Altura del div */
+    overflow: auto;
+    /* Agrega scroll si el contenido es muy grande */
+    z-index: 999;
+    /* Asegura que esté sobre los demás elementos */
+    position: fixed;
+    /* Lo mantiene fijo en la pantalla */
+    top: 50%;
+    /* Lo posiciona en el centro vertical */
+    left: 50%;
+    /* Lo posiciona en el centro horizontal */
+    transform: translate(-50%, -50%);
+    /* Centra el div */
+    display: none;
+    /* Por defecto, oculto */
+}
