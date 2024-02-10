@@ -27,6 +27,8 @@ body {
     display: flex;
     align-items: center;
     height: 100vh;
+    /* Oculta la barra de desplazamiento horizontal */
+    overflow-y: hidden;
 }
 
 .contenedor {
@@ -222,8 +224,7 @@ body {
 .statusToggle {
     position: relative;
     display: flex;
-    align-items: center;
-    justify-content: center;
+
     margin-left: 10px;
     /* Ajusta el margen entre el nombre y el toggle */
 }
@@ -310,7 +311,7 @@ input[type="checkbox"]:checked+.toggle::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+
     /* Fondo semitransparente */
     display: none;
     /* Por defecto, el div emergente está oculto */
@@ -318,12 +319,26 @@ input[type="checkbox"]:checked+.toggle::before {
     /* Centra horizontalmente */
     align-items: center;
     /* Centra verticalmente */
+    width: fit-content;
+    /* Establece el ancho del contenedor según el contenido */
+    height: fit-content;
+    overflow-y: hidden !important;
+
 }
 
 .popupContent {
     background-color: #ffffff;
     padding: 20px;
     border-radius: 10px;
+    overflow-y: scroll !important;
+    /* Permitir el scroll vertical */
+    scrollbar-width: none;
+
+}
+
+.popupContent::-webkit-scrollbar {
+    display: none;
+    /* Ocultar la barra de desplazamiento en navegadores WebKit (Chrome, Safari, etc.) */
 }
 
 .popupContainer.active {
@@ -564,7 +579,6 @@ input[type="checkbox"]:checked+.toggle::before {
 }
 
 #contenidoAdicional {
-    background-color: rgba(255, 255, 255, 0.9);
     /* Fondo semitransparente */
     width: 80%;
     /* Ancho del div */
@@ -576,7 +590,7 @@ input[type="checkbox"]:checked+.toggle::before {
     /* Asegura que esté sobre los demás elementos */
     position: fixed;
     /* Lo mantiene fijo en la pantalla */
-    top: 50%;
+    top: 55%;
     /* Lo posiciona en el centro vertical */
     left: 50%;
     /* Lo posiciona en el centro horizontal */
@@ -584,4 +598,109 @@ input[type="checkbox"]:checked+.toggle::before {
     /* Centra el div */
     display: none;
     /* Por defecto, oculto */
+}
+
+#cerrarVentana {
+    position: absolute;
+    top: 40px;
+    right: 40px;
+    /* Ajusta la posición para colocar el botón en la esquina superior derecha */
+    font-size: 20px;
+    cursor: pointer;
+    width: 30px;
+    /* Ancho del botón */
+    height: 30px;
+    /* Altura del botón */
+    background-color: #fff;
+    /* Color de fondo blanco */
+    border: 2px solid #333;
+    /* Borde sólido gris */
+    border-radius: 50%;
+    /* Borde redondeado para formar un círculo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Estilos adicionales para el botón de cierre al pasar el ratón */
+#cerrarVentana:hover {
+    color: red;
+    /* Cambia el color del texto a rojo */
+    background-color: #eee;
+    /* Cambia el color de fondo al pasar el ratón */
+}
+
+
+.fechas {
+    display: flex;
+    justify-content: center;
+    /* Centra horizontalmente */
+    align-items: center;
+    /* Centra verticalmente */
+    height: 100%;
+    /* Opcional: ajusta la altura según sea necesario */
+
+}
+
+.input-container {
+    text-align: center;
+    margin-bottom: 20px;
+    margin-right: 150px;
+    /* Agrega un margen derecho entre los campos de fecha */
+}
+
+.input-container:last-child {
+    margin-right: 0;
+    /* Elimina el margen derecho del último campo de fecha */
+}
+
+
+.input-container input {
+    display: block;
+    margin-top: 5px;
+    /* Espacio entre el título y el campo de entrada */
+    width: 600px;
+    /* Ancho máximo o específico para los inputs */
+
+}
+
+
+
+@media screen and (max-width: 1920px) {
+    #contenidoAdicional {
+        width: 80%;
+        height: 85%;
+        overflow: auto;
+        z-index: 999;
+        position: fixed;
+        top: 48.5%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: none;
+        padding: 10px;
+        /* Reducir el espacio entre el contenido y el borde del contenedor */
+    }
+
+    .popupContainer {
+        width: 70%;
+        height: 70%;
+        max-width: none;
+        max-height: none;
+    }
+
+    .popupContent {
+        font-size: 0.9em;
+        padding: 5px;
+        /* Reducir el espacio entre el contenido y el borde del contenedor */
+    }
+
+    .imagenes-tipos img {
+        width: 120px;
+        /* Reducir aún más el tamaño de las imágenes */
+    }
+
+    .formulario {
+        padding: 10px;
+        background-color: var(--azul);
+    }
 }
