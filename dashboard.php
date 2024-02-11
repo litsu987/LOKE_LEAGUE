@@ -13,9 +13,6 @@ $userID = $_SESSION['username'];
 // Aquí podrías realizar consultas a la base de datos para obtener más información sobre el usuario si es necesario
 
 
-// Verificar si el usuario ha iniciado sesión
-
-
 include("config.php");
 try {
     $hostname = "localhost";
@@ -37,89 +34,52 @@ $creatorID = $getUserIDQuery->fetchColumn();
 
 // Verificar si se ha enviado el formulario
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Obtener los datos del formulario
-    $nombreLiga = $_POST['nombre'];
-    $nombreJuego = $_POST['tipo'];
-    $fechaInicio = $_POST['fecha_inicio'];
-    $fechaFin = $_POST['fecha_fin'];
-    $randomLocke = isset($_POST['randomlocke']) ? 1 : 0; // Convertir el valor del checkbox a 1 o 0
+    
+    // Verificar si ya existe una liga asociada con el usuario actual
+    $checkLeagueQuery = $pdo->prepare("SELECT COUNT(*) FROM ligas WHERE CreatorID = ?");
+    $checkLeagueQuery->execute([$creatorID]);
+    $leagueCount = $checkLeagueQuery->fetchColumn();
 
-    // Insertar los datos en la tabla ligas
-    $insertLigaQuery = $pdo->prepare("INSERT INTO ligas (NombreLiga, NombreJuego, CreatorID, FechaCreacion, FechaFinalizacion, RandomLocke) VALUES (?, ?, ?, ?, ?, ?)");
-    $insertLigaQuery->execute([$nombreLiga, $nombreJuego, $creatorID, $fechaInicio, $fechaFin, $randomLocke]);
+    if ($leagueCount > 0) {
+        $errorMessage = "Error: Ya tienes una liga creada.";
+    } else {
+        // Si no existe una liga asociada con el usuario, procede a insertar la nueva liga
+        // Obtener los datos del formulario
+        $nombreLiga = $_POST['nombre'];
+        $nombreJuego = $_POST['nombreJuego']; 
+        $fechaInicio = $_POST['fecha_inicio'];
+        $fechaFin = $_POST['fecha_fin'];
+        $randomLocke = isset($_POST['randomlocke']) ? true : false;
+        
+        // Insertar los datos en la tabla ligas
+        $insertLigaQuery = $pdo->prepare("INSERT INTO ligas (NombreLiga, NombreJuego, CreatorID, FechaCreacion, FechaFinalizacion, RandomLocke) VALUES (?, ?, ?, ?, ?, ?)");
+        $insertLigaQuery->execute([$nombreLiga, $nombreJuego, $creatorID, $fechaInicio, $fechaFin, $randomLocke]);
 
-    // Redirigir a alguna página después de agregar la liga (por ejemplo, la página de perfil del usuario)
-    header("Location: dashboard.php");
-    exit();
+        // Redirigir a alguna página después de agregar la liga (por ejemplo, la página de perfil del usuario)
+        header("Location: dashboard.php");
+        exit();
+    }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles2.css">
     <link rel="icon" href="./img/vota-si.png" />
     <title>LOKE LEAGUE - Dashboard</title>
 </head>
-<style>
-    .imagenes-tipos {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px; /* Espacio entre las imágenes */
-    }
 
-    .imagenes-tipos label {
-        flex: 0 0 calc(25% - 20px); /* Cambia el 33.33% por 25% para tener 4 columnas */
-        margin-bottom: 20px;
-        text-align: center;
-    }
-
-    .imagenes-tipos img {
-        width: 150px; /* Tamaño de las imágenes */
-        height: auto;
-        border: 2px solid transparent;
-        cursor: pointer;
-    }
-
-    .imagenes-tipos input[type="radio"] {
-        display: none;
-    }
-
-    .imagenes-tipos input[type="radio"]:checked + label img {
-        border-color: #007bff; /* Cambia el color del borde a un tono de azul */
-        border-width: 4px; /* Ajusta el grosor del borde */
-    }
-
-    @media screen and (max-width: 1920px) {
-    .imagenes-tipos {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0; /* Sin espacio entre las imágenes */
-    }
-
-    .imagenes-tipos label {
-        flex: 0 0 calc(25% - 20px); /* Cambia el 33.33% por 25% para tener 4 columnas */
-        margin-bottom: 0; /* Elimina el margen inferior */
-        text-align: center;
-    }
-
-    .imagenes-tipos input[type="radio"] {
-        display: none;
-    }
-
-    .imagenes-tipos input[type="radio"]:checked + label img {
-        border-color: #007bff; /* Cambia el color del borde a un tono de azul */
-        border-width: 4px; /* Ajusta el grosor del borde */
-    }
-}
-
-
-
-</style>
 <body>
+
     <?php include("components/header.php"); ?>
+
+    <?php if(isset($errorMessage)): ?>
+        <div class="error-message"><?php echo $errorMessage; ?></div>
+    <?php endif; ?>
     <!--
     <section class="dashboardSection">
         <div id="notificationContainer"></div>
@@ -140,7 +100,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     -->
     <div class="centeredContainer"> 
         <div class="horizontalContainer">
-            <div class="elemento1">
+            <div class="elemento1" id="abrirOtroContenido">
                 <h1 class="titulo">Mis Ligas</h1>
             </div>
             <div class="elemento2" id="abrirContenido">
@@ -154,9 +114,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
     <div id="contenidoAdicional" class="popupContainer">
-        <div class="popupContent">
-            <span id="cerrarVentana">X</span>
-            <form class="formulario" method="POST">
+    <div class="popupContent">
+            <span id="cerrarVentana" class="cerrarVentana">X</span>
+            <form class="formulario" method="POST" >
                 <div class="texto-formulario">
                     <h2>Crear Liga</h2>
                     <!-- Puedes agregar un mensaje de error si lo necesitas -->
@@ -167,62 +127,115 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
                 <div class="input">
                     <label>Selecciona el Juego:</label>
-                    <div class="imagenes-tipos">
-                        
-                        <input type="radio" id="rojofuego" name="tipo" value="Rojo Fuego y Verde Hoja">
-                        <label for="rojofuego"><img src="https://images.wikidexcdn.net/mwuploads/wikidex/a/ac/latest/20211108122617/Car%C3%A1tula_de_Rojo_Fuego.png" alt="Rojo Fuego y Verde Hoja"></label>
-
-                        <input type="radio" id="Esmeralda" name="tipo" value="Esmeralda">
-                        <label for="Esmeralda"><img src="https://images.wikidexcdn.net/mwuploads/wikidex/0/02/latest/20211108123052/Caratula_Esmeralda.jpg" alt="Platino"></label>
-
-                        <input type="radio" id="Platino" name="tipo" value="Platino">
-                        <label for="Platino"><img src="https://images.wikidexcdn.net/mwuploads/wikidex/f/f4/latest/20211108120853/Car%C3%A1tula_Pok%C3%A9mon_Platino_%28ESP%29.png" alt="Platino"></label>
-
-                        <input type="radio" id="HeartGoldSoulSilver" name="tipo" value="HeartGold y SoulSilver">
-                        <label for="HeartGoldSoulSilver"><img src="https://images.wikidexcdn.net/mwuploads/wikidex/5/5c/latest/20211108121148/Pok%C3%A9mon_Edici%C3%B3n_Plata_SoulSilver_car%C3%A1tula_ES.jpg" alt="HeartGold y SoulSilver"></label>
-
-                        <input type="radio" id="Negro y Blanco" name="tipo" value="Negro y Blanco">
-                        <label for="Negro y Blanco"><img src="https://images.wikidexcdn.net/mwuploads/wikidex/9/94/latest/20211117102637/Pok%C3%A9mon_Edici%C3%B3n_Negra.png" alt="Negro y Blanco"></label>
-
-                        <input type="radio" id="Negro2 y Blanco2" name="tipo" value="Negro2 y Blanco2">
-                        <label for="Negro2 y Blanco2"><img src="https://images.wikidexcdn.net/mwuploads/wikidex/1/17/latest/20140218002530/Box_Pok%C3%A9mon_Blanco_2.png" alt="Negro2 y Blanco2"></label>
-
-                            
-                        <input type="radio" id="X y Y" name="tipo" value="X y Y">
-                        <label for="X y Y"><img src="https://images.wikidexcdn.net/mwuploads/wikidex/6/6f/latest/20130621162348/Pok%C3%A9mon_Y_Car%C3%A1tula.png" alt="X y Y"></label>
-
-                            
-                        <input type="radio" id="Rubí Omega y Zafiro Alfa" name="tipo" value="Rubí Omega y Zafiro Alfa">
-                        <label for="Rubí Omega y Zafiro Alfa"><img src="https://images.wikidexcdn.net/mwuploads/wikidex/5/5d/latest/20150827182103/Car%C3%A1tula_Pok%C3%A9mon_Rub%C3%AD_Omega.png" alt="Rubí Omega y Zafiro Alfa"></label>
-                        
-                        <!-- Agrega más imágenes y opciones según sea necesario -->
+                    <!-- Div que contendrá las imágenes del juego -->
+                    <div id="contenedorImagenes">
+                        <!-- Imagen inicial -->
+                        <span class="flecha" id="flechaIzquierda">&#10094;</span>
+                        <img id="imagenJuego" src="https://images.wikidexcdn.net/mwuploads/wikidex/a/ac/latest/20211108122617/Car%C3%A1tula_de_Rojo_Fuego.png" alt="Rojo Fuego y Verde Hoja" data-nombre="Rojo Fuego y Verde Hoja">
+                        <span class="flecha" id="flechaDerecha">&#10095;</span>
                     </div>
-                </div>
-                    <div class="input">
-                    <label>Modalidad de Juego:</label>
-                    <div class="statusToggle">
-                        <input type="checkbox" id="randomlocke" name="randomlocke">
-                        <label for="randomlocke" class="toggle" title="Cambiar estado"></label>
-                        <span class="toggleFeedback">Normal</span>
+
+                    <div class="input" >
+                        <div class="statusToggle">
+                            <input type="checkbox" id="randomlocke" name="randomlocke">
+                            <label for="randomlocke" class="customToggle"></label>
+                            <span class="toggleFeedback">Normal</span>
+                        </div>
                     </div>
+                    
                 </div>
+                
                 <div class="input fechas">
-                    <div class="input-container">
+                    <div class="input-container	">
                         <label for="fecha_inicio">Fecha inicial:</label>
-                        <input type="date" id="fecha_inicio" name="fecha_inicio" required>
+                        <input type="datetime-local" id="fecha_inicio" name="fecha_inicio" required>
                     </div>
                     <div class="input-container">
                         <label for="fecha_fin">Fecha final:</label>
-                        <input type="date" id="fecha_fin" name="fecha_fin" required>
+                        <input type="datetime-local" id="fecha_fin" name="fecha_fin" required>
                     </div>
                 </div>
-
-
                 <div class="input">
+                    <input type="hidden" id="nombreJuego" name="nombreJuego">
                     <input type="submit" value="Crear Liga">
                 </div>
-        </form>
             </form>
+        </div>
+    </div>
+    
+    <div id="otroContenido" class="popupContainer">
+        <?php
+        $sql = "SELECT * FROM ligas";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+        $ligas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        ?>
+        <div class="popupContent">
+        <span id="cerrarOtroContenido" class="cerrarVentana">X</span>
+        <h1 style="text-align: center;">Torneos</h1>
+        <div class="column">
+            <?php foreach ($ligas as $liga): ?>
+                <?php
+                $imagen = '';
+                switch ($liga['NombreJuego']) {
+                    case 'Rojo':
+                        $imagen = 'https://images.wikidexcdn.net/mwuploads/wikidex/a/ac/latest/20211108122617/Car%C3%A1tula_de_Rojo_Fuego.png';
+                        break;
+                    case 'Esmeralda':
+                        $imagen = 'https://images.wikidexcdn.net/mwuploads/wikidex/0/02/latest/20211108123052/Caratula_Esmeralda.jpg';
+                        break;
+                    case 'Platino':
+                        $imagen = 'https://images.wikidexcdn.net/mwuploads/wikidex/f/f4/latest/20211108120853/Car%C3%A1tula_Pok%C3%A9mon_Platino_%28ESP%29.png';
+                        break;
+                    case 'SoulSilver':
+                        $imagen = 'https://images.wikidexcdn.net/mwuploads/wikidex/5/5c/latest/20211108121148/Pok%C3%A9mon_Edici%C3%B3n_Plata_SoulSilver_car%C3%A1tula_ES.jpg';
+                        break;
+                    case 'Negro':
+                        $imagen = 'https://images.wikidexcdn.net/mwuploads/wikidex/9/94/latest/20211117102637/Pok%C3%A9mon_Edici%C3%B3n_Negra.png';
+                        break;
+                    case 'Negro2':
+                        $imagen = 'https://images.wikidexcdn.net/mwuploads/wikidex/1/17/latest/20140218002530/Box_Pok%C3%A9mon_Blanco_2.png';
+                        break;
+                    case 'Y':
+                        $imagen = 'https://images.wikidexcdn.net/mwuploads/wikidex/6/6f/latest/20130621162348/Pok%C3%A9mon_Y_Car%C3%A1tula.png';
+                        break;
+                    case 'omega':
+                        $imagen = 'https://images.wikidexcdn.net/mwuploads/wikidex/5/5d/latest/20150827182103/Car%C3%A1tula_Pok%C3%A9mon_Rub%C3%AD_Omega.png';
+                        break;
+                    default:
+                        $imagen = 'ruta de la imagen predeterminada';
+                        break;
+                }
+                ?>
+                <div class="liga-container">
+                    <img src="<?php echo $imagen; ?>" alt="<?php echo $liga['NombreJuego']; ?>">
+                    <div>
+                        <p class="info-label">Nombre del Torneo:</p>
+                        <p><?php echo $liga['NombreLiga']; ?></p>
+                    </div>
+                    <?php if ($liga['RandomLocke'] == 0): ?>
+                        <div>
+                            <p class="info-label">Modalidad:</p>
+                            <p>Normal</p>
+                        </div>
+                    <?php elseif ($liga['RandomLocke'] == 1): ?>
+                        <div>
+                            <p class="info-label">Modalidad:</p>
+                            <p>Random</p>
+                        </div>
+                    <?php endif; ?>
+                    <div>
+                        <p class="info-label">Fecha de Inicio:</p>
+                        <p><?php echo $liga['FechaCreacion']; ?></p>
+                    </div>
+                    <div>
+                        <p class="info-label">Fecha de Finalización:</p>
+                        <p><?php echo $liga['FechaFinalizacion']; ?></p>
+                    </div>
+                    <button>Unirme al torneo</button>
+                </div>
+            <?php endforeach; ?>
+        </div>
         </div>
     </div>
 
@@ -242,9 +255,127 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     </div>
 
-    <?php include("components/footer.php"); ?>
 
     <script>
+       document.addEventListener('DOMContentLoaded', function() {
+        // Obtener la fecha y hora actual en el formato YYYY-MM-DDTHH:MM (formato datetime-local)
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = ('0' + (now.getMonth() + 1)).slice(-2); // Añadir 1 porque los meses se indexan desde 0
+        const day = ('0' + now.getDate()).slice(-2);
+        const hours = ('0' + now.getHours()).slice(-2);
+        const minutes = ('0' + now.getMinutes()).slice(-2);
+        const datetime = `${year}-${month}-${day}T${hours}:${minutes}`;
+        
+        // Establecer la fecha y hora actual como el valor por defecto para el input de fecha inicial
+        document.getElementById('fecha_inicio').value = datetime;
+    });
+
+    const imagenJuego = document.getElementById('imagenJuego');
+    const flechaIzquierda = document.getElementById('flechaIzquierda');
+    const flechaDerecha = document.getElementById('flechaDerecha');
+
+    const imagenesJuegos = [
+        {
+            url: 'https://images.wikidexcdn.net/mwuploads/wikidex/a/ac/latest/20211108122617/Car%C3%A1tula_de_Rojo_Fuego.png',
+            name:"tipo",
+            value: 'Rojo Fuego y Verde Hoja',
+
+        },
+        {
+            url: 'https://images.wikidexcdn.net/mwuploads/wikidex/0/02/latest/20211108123052/Caratula_Esmeralda.jpg',
+            name:"tipo",
+            value: 'Esmeralda',
+        },
+        {
+            url: 'https://images.wikidexcdn.net/mwuploads/wikidex/f/f4/latest/20211108120853/Car%C3%A1tula_Pok%C3%A9mon_Platino_%28ESP%29.png',
+            name:"tipo",
+            value: 'Platino',
+        },
+        {
+            url: 'https://images.wikidexcdn.net/mwuploads/wikidex/5/5c/latest/20211108121148/Pok%C3%A9mon_Edici%C3%B3n_Plata_SoulSilver_car%C3%A1tula_ES.jpg',
+            name:"tipo",
+            value: 'SoulSilver',
+        },
+        {
+            url: 'https://images.wikidexcdn.net/mwuploads/wikidex/9/94/latest/20211117102637/Pok%C3%A9mon_Edici%C3%B3n_Negra.png',
+            name:"tipo",
+            value: 'Negro',
+        },
+        {
+            url: 'https://images.wikidexcdn.net/mwuploads/wikidex/1/17/latest/20140218002530/Box_Pok%C3%A9mon_Blanco_2.png',
+            name:"tipo",
+            value: 'Negro2',
+        },
+        {
+            url: 'https://images.wikidexcdn.net/mwuploads/wikidex/6/6f/latest/20130621162348/Pok%C3%A9mon_Y_Car%C3%A1tula.png',
+            name:"tipo",
+            value: 'Y',
+        },
+        {
+            url: 'https://images.wikidexcdn.net/mwuploads/wikidex/5/5d/latest/20150827182103/Car%C3%A1tula_Pok%C3%A9mon_Rub%C3%AD_Omega.png',
+            name:"tipo",
+            value: 'Omega',
+        },
+    ];
+
+    // Índice actual de la imagen mostrada
+    let indiceImagenActual = 0;
+
+    // Función para cambiar la imagen a la izquierda
+   // Función para cambiar la imagen a la izquierda
+    // Función para cambiar la imagen a la izquierda
+    // Función para cambiar la imagen a la izquierda
+    // Función para cambiar la imagen a la izquierda
+    function cambiarImagenIzquierda() {
+        // Decrementar el índice circularmente
+        indiceImagenActual = (indiceImagenActual - 1 + imagenesJuegos.length) % imagenesJuegos.length;
+        // Obtener la URL y el alt de la nueva imagen
+        const { url, alt, value } = imagenesJuegos[indiceImagenActual];
+        // Cambiar la fuente, el alt y el nombre del juego de la imagen actual
+        imagenJuego.src = url;
+        imagenJuego.alt = alt;
+        // Actualizar el valor del input hidden con el nombre del juego
+        document.getElementById('nombreJuego').value = value;
+    }
+
+    // Función para cambiar la imagen a la derecha
+    function cambiarImagenDerecha() {
+        // Incrementar el índice circularmente
+        indiceImagenActual = (indiceImagenActual + 1) % imagenesJuegos.length;
+        // Obtener la URL y el alt de la nueva imagen
+        const { url, alt, value } = imagenesJuegos[indiceImagenActual];
+        // Cambiar la fuente, el alt y el nombre del juego de la imagen actual
+        imagenJuego.src = url;
+        imagenJuego.alt = alt;
+        // Actualizar el valor del input hidden con el nombre del juego
+        document.getElementById('nombreJuego').value = value;
+    }
+
+    // Agregar evento de escucha para detectar las teclas de flecha
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'ArrowLeft') {
+            cambiarImagenIzquierda(); // Cambiar imagen a la izquierda al presionar la tecla de flecha izquierda
+        } else if (event.key === 'ArrowRight') {
+            cambiarImagenDerecha(); // Cambiar imagen a la derecha al presionar la tecla de flecha derecha
+        }
+    });
+
+
+    // Agregar eventos de clic a las flechas para cambiar la imagen
+    flechaIzquierda.addEventListener('click', cambiarImagenIzquierda);
+    flechaDerecha.addEventListener('click', cambiarImagenDerecha);
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const cerrarOtroContenido = document.getElementById("cerrarOtroContenido"); // Cambiado el ID
+            const otroContenido = document.getElementById("otroContenido");
+
+            cerrarOtroContenido.addEventListener("click", function() { // Cambiado el ID
+                // Oculta el contenido cuando se hace clic en el botón
+                otroContenido.style.display = "none";
+            });
+        });
+
 
         document.addEventListener("DOMContentLoaded", function() {
             const abrirContenido = document.getElementById("abrirContenido");
@@ -262,6 +393,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             });
         });
 
+        document.addEventListener("DOMContentLoaded", function() {
+            const abrirOtroContenido = document.getElementById("abrirOtroContenido");
+            const otroContenido = document.getElementById("otroContenido");
+
+            abrirOtroContenido.addEventListener("click", function() {
+                // Muestra el contenido cuando se hace clic
+                otroContenido.style.display = "block";
+            });
+        });
 
         var statusCheckbox = document.getElementById("randomlocke");
         var toggleFeedback = document.querySelector(".toggleFeedback");
@@ -309,7 +449,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             });
         });
 
+        <?php if(isset($errorMessage)): ?>
+            document.addEventListener("DOMContentLoaded", function() {
+                // Muestra el mensaje emergente si existe un mensaje de error
+                var mensajePopup = document.getElementById("mensajePopup");
+                mensajePopup.innerText = "<?php echo $errorMessage; ?>";
+                mensajePopup.style.display = "block";
+            });
+        <?php endif; ?>
+        
+        const errorMessage = document.querySelector('.error-message');
 
+        // Si existe un mensaje de error
+        if (errorMessage) {
+            // Espera 10 segundos y luego oculta el mensaje
+            setTimeout(function() {
+                errorMessage.style.display = 'none';
+            }, 10000); // 10000 milisegundos = 10 segundos
+        }
+
+        
     </script>
 </body>
 </html>

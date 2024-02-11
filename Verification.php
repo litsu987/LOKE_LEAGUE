@@ -42,7 +42,7 @@ if (isset($_GET['validToken'])) {
         $updateQuery->execute([$validToken]);
 
         // Redirigir a http://localhost/LokeLeague/dashboard.php
-        header("Location: login.php");
+        header("Location: dashboard.php");
         exit();
     }
 } 

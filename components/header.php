@@ -74,7 +74,6 @@
         echo '<a href="index.php" id="logo">LOKE LEAGUE</a>';
         echo '<div class="login-register">';
         echo '<a href="login.php">INICIAR SESIÓN</a>';
-        echo '<a href="register.php">REGISTRARSE</a>';
         echo '</div>';
         echo '</header>';
     }
