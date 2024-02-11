@@ -40,9 +40,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $emailCheckQuery->execute([$destinatario]);
         $emailCount = $emailCheckQuery->fetchColumn();
 
+        // Verificar si el nombre de usuario ya está en uso
+        $usernameCheckQuery = $pdo->prepare("SELECT COUNT(*) FROM Users WHERE Username = ?");
+        $usernameCheckQuery->execute([$username]);
+        $usernameCount = $usernameCheckQuery->fetchColumn();
+
         if ($emailCount > 0) {
             echo '<script>showNotification("error", "El correo electrónico ya está registrado");</script>';
-        } else {
+            $errorMessage = "Error: El correo electrónico ya está registrado.";
+        } elseif ($usernameCount > 0) {
+            $errorMessage = "Error: El nombre de usuario ya está en uso.";
+        }else {
             // Generar token de forma más sencilla
             $tokenLength = 40;
             $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -147,25 +155,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         #deslizar {
-        position: absolute;
-        top: calc(-18px - 20px); /* Calcula la posición desde la parte superior del contenedor */
-        left: 0;
-        color: var(--blanco);
-        border: none;
-        cursor: pointer;
-        padding: 10px 20px; /* ajuste del tamaño del botón */
-        font-size: 16px;
-        z-index: 1; /* asegura que esté por encima del formulario */
-        width: 44%; /* Ancho fijo del botón */
-        transition: transform 0.5s ease-in-out, background 0.5s ease-in-out; /* Animación de transformación y de fondo */
-        /* Definir el fondo inicial del botón */
-        background: linear-gradient(to right, #5d9cec, #4b89da);
-    }
+            position: absolute;
+            top: calc(-18px - 20px); /* Calcula la posición desde la parte superior del contenedor */
+            left: 0;
+            color: var(--blanco);
+            border: none;
+            cursor: pointer;
+            padding: 10px 20px; /* ajuste del tamaño del botón */
+            font-size: 16px;
+            z-index: 1; /* asegura que esté por encima del formulario */
+            width: 44%; /* Ancho fijo del botón */
+            transition: transform 0.5s ease-in-out, background 0.5s ease-in-out; /* Animación de transformación y de fondo */
+            /* Definir el fondo inicial del botón */
+            background: linear-gradient(to right, #5d9cec, #4b89da);
+        }
 
-    #deslizar.mostrar {
-        transform: translateX(110%); /* Desplazar hacia la derecha */
-        background: linear-gradient(to right, #ff9500, #ff5e3a); /* Cambia el color de fondo a otro tono de naranja cuando está en el estado "Iniciar Sesión" */
-    }
+        #deslizar.mostrar {
+            transform: translateX(110%); /* Desplazar hacia la derecha */
+            background: linear-gradient(to right, #ff9500, #ff5e3a); /* Cambia el color de fondo a otro tono de naranja cuando está en el estado "Iniciar Sesión" */
+        }
 
         .formulario {
             display: none; /* Inicialmente ocultar el formulario de registro */
@@ -174,12 +182,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .formulario.mostrar {
             display: block; /* Mostrar formulario cuando la clase 'mostrar' está presente */
         }
+        @media screen and (max-width: 1920px) {
 
-        
+            #deslizar {
+                position: absolute;
+                top: calc(-18px - 20px); /* Calcula la posición desde la parte superior del contenedor */
+                left: 0;
+                color: var(--blanco);
+                border: none;
+                cursor: pointer;
+                padding: 10px 20px; /* ajuste del tamaño del botón */
+                font-size: 16px;
+                z-index: 1; /* asegura que esté por encima del formulario */
+                width: 40.8%; /* Ancho fijo del botón */
+                transition: transform 0.5s ease-in-out, background 0.5s ease-in-out; /* Animación de transformación y de fondo */
+                /* Definir el fondo inicial del botón */
+                background: linear-gradient(to right, #5d9cec, #4b89da);
+            }
+        }
+            
     </style>
 </head>
 
 <body>
+<?php if(isset($errorMessage)): ?>
+        <div class="error-message"><?php echo $errorMessage; ?></div>
+<?php endif; ?>
 <?php include("components/header.php"); ?>
     <div id="formulario-container" class="contenedor-formulario contenedor">
         <button id="deslizar">Registrarse</button>
@@ -273,6 +301,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     });
 
+    <?php if(isset($errorMessage)): ?>
+            document.addEventListener("DOMContentLoaded", function() {
+                // Muestra el mensaje emergente si existe un mensaje de error
+                var mensajePopup = document.getElementById("mensajePopup");
+                mensajePopup.innerText = "<?php echo $errorMessage; ?>";
+                mensajePopup.style.display = "block";
+            });
+        <?php endif; ?>
+        
+        const errorMessage = document.querySelector('.error-message');
+
+        // Si existe un mensaje de error
+        if (errorMessage) {
+            // Espera 10 segundos y luego oculta el mensaje
+            setTimeout(function() {
+                errorMessage.style.display = 'none';
+            }, 5000); // 10000 milisegundos = 10 segundos
+        }
 </script>
 
 </body>

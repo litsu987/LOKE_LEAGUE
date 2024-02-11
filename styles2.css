@@ -30,12 +30,14 @@
         /* Oculta la barra de desplazamiento horizontal */
         overflow-y: hidden;
 
-        
+
     }
-    
+
     ::-webkit-scrollbar {
-        width: 0; /* Ocultar la barra de desplazamiento */
-        background: transparent; /* Fondo transparente */
+        width: 0;
+        /* Ocultar la barra de desplazamiento */
+        background: transparent;
+        /* Fondo transparente */
     }
 
     .contenedor {
@@ -180,6 +182,7 @@
     .dashboardContent {
         display: flex;
         flex-direction: column;
+
         /* Cambia la dirección a columna */
     }
 
@@ -369,6 +372,26 @@
     }
 
     .popupContainer.active {
+        display: flex;
+        /* Muestra el div emergente cuando está activo */
+    }
+
+    .popupContent2 {
+        background-color: var(--azul);
+        padding: 20px;
+        border-radius: 10px;
+        overflow-y: scroll !important;
+        /* Permitir el scroll vertical */
+        scrollbar-width: none;
+
+    }
+
+    .popupContent2::-webkit-scrollbar {
+        display: none;
+        /* Ocultar la barra de desplazamiento en navegadores WebKit (Chrome, Safari, etc.) */
+    }
+
+    .popupContainer2.active {
         display: flex;
         /* Muestra el div emergente cuando está activo */
     }
@@ -607,7 +630,8 @@
 
 
     .cerrarVentana {
-        position: absolute;
+        position: fixed;
+        /* Cambia la posición a fija para que el botón siempre esté visible en pantalla */
         top: 40px;
         right: 40px;
         /* Ajusta la posición para colocar el botón en la esquina superior derecha */
@@ -626,6 +650,8 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        z-index: 9999;
+        /* Asegura que esté en la capa superior */
     }
 
     /* Estilos adicionales para el botón de cierre al pasar el ratón */
@@ -635,6 +661,7 @@
         background-color: #eee;
         /* Cambia el color de fondo al pasar el ratón */
     }
+
 
 
     .fechas {
@@ -665,7 +692,7 @@
         display: block;
         margin-top: 5px;
         /* Espacio entre el título y el campo de entrada */
-        width: 600px;
+        width: 300px;
         /* Ancho máximo o específico para los inputs */
 
     }
@@ -809,6 +836,32 @@
     }
 
 
+    #otroContenido h2 {
+        font-size: 55px;
+        /* Tamaño de fuente aumentado */
+        color: #ffffff;
+        /* Color blanco */
+        text-transform: uppercase;
+        /* Convertir el texto a mayúsculas */
+        text-align: center;
+        /* Centrar el texto */
+        margin-bottom: 30px;
+        /* Agregar espacio debajo del título */
+        font-weight: bold;
+        /* Hacer que el texto sea negrita */
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        /* Agregar sombra al texto */
+        padding: 20px 40px;
+        /* Añadir relleno */
+        border-radius: 10px;
+        /* Agregar bordes redondeados */
+
+        /* Agregar sombra al contenedor */
+        transition: background-color 0.3s, transform 0.3s;
+        /* Transiciones suaves */
+    }
+
+
 
     #contenidoAdicional h2:hover {
         animation: fuego 1s infinite alternate;
@@ -889,9 +942,9 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        max-width: 1200px;
         /* Ancho máximo del contenedor principal */
         margin: 0 auto;
+        background-color: var(--azul);
         /* Centrar el contenedor */
     }
 
@@ -906,6 +959,26 @@
         text-align: center;
         box-sizing: border-box;
         /* Incluye relleno y bordes en el ancho y alto */
+        transition: transform 0.3s ease-in-out;
+        /* Transición suave de la transformación */
+        cursor: pointer;
+        /* Cambia el cursor al pasar por encima */
+
+    }
+
+    .liga-container:hover {
+        transform: scale(1.05);
+        /* Hace un zoom al hacer hover sobre el torneo */
+    }
+
+    .liga-container.zoomed {
+        transform: scale(1.05);
+        /* Aumenta el tamaño cuando está zoomed */
+    }
+
+    .liga-container:active {
+        transform: scale(1);
+        /* Vuelve al tamaño normal al hacer clic */
     }
 
     .liga-container img {
@@ -921,19 +994,28 @@
         font-weight: bold;
     }
 
-    button {
-        background-color: #4CAF50;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s;
+    .title-container {
+        text-align: center;
+        /* Centra el contenido del contenedor */
+        margin-bottom: 20px;
+        /* Añade espacio debajo del título */
     }
 
-    button:hover {
-        background-color: #45a049;
+    /* Estilos para el título */
+    .title-container h2 {
+        margin: 0;
+        /* Elimina el margen superior e inferior */
+        color: #333;
+        /* Color del texto */
+        font-family: 'Roboto', sans-serif;
+        /* Utiliza la fuente Roboto con fallback a fuentes sans-serif */
+        font-size: 40px;
+        text-align: center;
+
     }
+
+
+
 
     @media screen and (max-width: 1920px) {
         #contenidoAdicional {
